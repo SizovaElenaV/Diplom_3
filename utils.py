@@ -4,7 +4,8 @@ import string
 import requests
 from faker import Faker
 
-from data import REGISTER_URL, MAKE_ORDER_URL, INGREDIENTS_LIST_SAMPLE
+from data import UrlApiData, LocatorData
+
 
 
 def generate_random_string(length):
@@ -29,7 +30,7 @@ def random_payload():
 def get_tokens(payload):
     login_pass = {}
 
-    response = requests.post(REGISTER_URL, data=payload)
+    response = requests.post(UrlApiData.API_REGISTER_URL, data=payload)
     data = response.json()
     if response.status_code == 200:
         login_pass['accessToken'] = data['accessToken']
@@ -39,13 +40,13 @@ def get_tokens(payload):
 
 
 def get_ingredients_payload():
-    return INGREDIENTS_LIST_SAMPLE
+    return LocatorData.INGREDIENTS_LIST_SAMPLE
 
 
 def make_order():
     payload = random_payload()
     login_pass = get_tokens(payload)
     ingredients_payload = get_ingredients_payload()
-    order_request = requests.post(MAKE_ORDER_URL, headers={'authorization': login_pass['accessToken']}, data=ingredients_payload)
+    order_request = requests.post(UrlApiData.API_MAKE_ORDER_URL, headers={'authorization': login_pass['accessToken']}, data=ingredients_payload)
     if order_request.status_code == 200:
         return order_request.json()['order']['number']
